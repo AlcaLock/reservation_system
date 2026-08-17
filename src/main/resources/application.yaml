@@ -1,3 +1,14 @@
 spring:
   application:
     name: Artifact-reservation-system
+  datasource:
+    url: jdbc:postgresql://localhost:5432/reservation_db
+    username: reservation_user
+    password: reservation_password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+

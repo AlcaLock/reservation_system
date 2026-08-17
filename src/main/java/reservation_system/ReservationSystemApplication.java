@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ArtifactReservationSystemApplication {
+public class ReservationSystemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ArtifactReservationSystemApplication.class, args);
+		SpringApplication.run(ReservationSystemApplication.class, args);
 	}
 
 }

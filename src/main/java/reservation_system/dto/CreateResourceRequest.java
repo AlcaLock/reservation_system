@@ -1,0 +1,5 @@
+package reservation_system.dto;
+
+public class CreateResourceRequest {
+    
+}
