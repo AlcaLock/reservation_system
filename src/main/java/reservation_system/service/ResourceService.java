@@ -1,10 +1,17 @@
 package reservation_system.service;
 
-import org.springframework.stereotype.Service;
+import jakarta.validation.Valid;
+import reservation_system.dto.CreateResourceRequest;
 import reservation_system.entity.Resource;
+import reservation_system.entity.ResourceStatus;
 import reservation_system.repository.ResourceRepository;
+import reservation_system.dto.ResourceResponse;
+import java.util.stream.Collectors;
+import reservation_system.exception.ResourceNotFoundException;
 
 import java.util.List;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class ResourceService {
@@ -15,33 +22,48 @@ public class ResourceService {
         this.resourceRepository = resourceRepository;
     }
 
-    public List<Resource> getAllResources() {
-        return resourceRepository.findAll();
+public List<ResourceResponse> findAll() {
+    return resourceRepository.findAll()
+            .stream()
+            .map(this::toResponse)
+            .collect(Collectors.toList());
+}
+
+public ResourceResponse findById(Long id) {
+
+    Resource resource = resourceRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(id));
+
+    return toResponse(resource);
+}
+
+        public ResourceResponse create(CreateResourceRequest request) {
+        Resource resource = new Resource(
+                request.getName(),
+                request.getDescription(),
+                request.getType(),
+                request.getCapacity(),
+                request.getLocation(),
+                ResourceStatus.AVAILABLE
+        );
+        Resource savedResource = resourceRepository.save(resource);
+        
+        return toResponse(savedResource);
     }
 
-    public Resource getResourceById(Long id) {
-        return resourceRepository.findById(id).orElse(null);
-    }
 
-    public Resource createResource(Resource resource) {
-        return resourceRepository.save(resource);
-    }
 
-    public Resource updateResource(Long id, Resource updatedResource) {
-        return resourceRepository.findById(id)
-                .map(resource -> {
-                    resource.setName(updatedResource.getName());
-                    resource.setDescription(updatedResource.getDescription());
-                    resource.setType(updatedResource.getType());
-                    resource.setCapacity(updatedResource.getCapacity());
-                    resource.setLocation(updatedResource.getLocation());
-                    resource.setStatus(updatedResource.getStatus());
-                    return resourceRepository.save(resource);
-                })
-                .orElse(null);
-    }
 
-    public void deleteResource(Long id) {
-        resourceRepository.deleteById(id);
-    }
+    private ResourceResponse toResponse(Resource resource) {
+    return new ResourceResponse(
+            resource.getId(),
+            resource.getName(),
+            resource.getDescription(),
+            resource.getType(),
+            resource.getCapacity(),
+            resource.getLocation(),
+            resource.getStatus()
+    );
+}
+   
 }

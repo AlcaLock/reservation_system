@@ -2,7 +2,7 @@ package reservation_system.entity;
 
 public enum ResourceType {
     ROOM,
-    LABORATOY,
+    LABORATORY,
     EQUIPMENT
     
 }
