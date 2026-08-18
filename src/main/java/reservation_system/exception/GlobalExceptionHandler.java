@@ -18,4 +18,15 @@ public class GlobalExceptionHandler {
                 exception.getMessage()
         );
     }
+
+    @ExceptionHandler(InvalidResourceStatusException.class)
+@ResponseStatus(HttpStatus.CONFLICT)
+public ErrorResponse handleInvalidResourceStatus(
+        InvalidResourceStatusException exception
+) {
+    return new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            exception.getMessage()
+    );
+}
 }
