@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
+
 
 import jakarta.validation.Valid;
 import reservation_system.dto.CreateResourceRequest;
 import reservation_system.dto.ResourceResponse;
 import reservation_system.dto.UpdateResourceRequest;
 import reservation_system.dto.UpdateResourceStatusRequest;
-import reservation_system.entity.Resource;
+
 import reservation_system.service.ResourceService;
 
 import java.util.List;

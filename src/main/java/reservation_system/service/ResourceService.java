@@ -1,6 +1,6 @@
 package reservation_system.service;
 
-import jakarta.validation.Valid;
+
 import reservation_system.dto.CreateResourceRequest;
 import reservation_system.entity.Resource;
 import reservation_system.entity.ResourceStatus;
