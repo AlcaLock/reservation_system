@@ -1,6 +1,8 @@
 package reservation_system.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import reservation_system.entity.Reservation;
 import reservation_system.entity.ReservationStatus;
 import reservation_system.entity.Resource;
+import reservation_system.entity.User;
 
 public interface ReservationRepository
         extends JpaRepository<Reservation, Long> {
@@ -17,5 +20,16 @@ public interface ReservationRepository
             ReservationStatus status,
             LocalDateTime endTime,
             LocalDateTime startTime
+    );
+
+    List<Reservation> findAllByOrderByStartTimeAsc();
+
+    List<Reservation> findByUserOrderByStartTimeDesc(
+            User user
+    );
+
+    long countByUserAndStatus(
+            User user,
+            ReservationStatus status
     );
 }

@@ -1,11 +1,18 @@
 package reservation_system.entity;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 
 @Entity
 public class Resource {
@@ -14,24 +21,44 @@ public class Resource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 120)
     private String name;
 
+    @Column(length = 500)
     private String description;
 
     @Enumerated(EnumType.STRING)
     private ResourceType type;
 
+    @Column(nullable = false)
     private Integer capacity;
 
+    @Column(nullable = false, length = 150)
     private String location;
 
     @Enumerated(EnumType.STRING)
     private ResourceStatus status;
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "resource")
+    private List<Reservation> reservations = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        if (status == null) {
+            status = ResourceStatus.AVAILABLE;
+        }
+
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     public Resource() {
     }
 
-    public Resource(
+     public Resource(
             String name,
             String description,
             ResourceType type,
@@ -97,5 +124,13 @@ public class Resource {
 
     public void setStatus(ResourceStatus status) {
         this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
     }
 }

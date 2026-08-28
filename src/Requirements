@@ -1,0 +1,844 @@
+SRS — ReserveHub
+Enterprise Resource Reservation Platform
+
+Tipo: Proyecto de portafolio (Backend + Frontend) Arquitectura: Monolito por capas Stack principal: Java 21 LTS, Spring Boot 4, PostgreSQL 17, React, Docker
+
+Objetivo
+
+Desarrollar una plataforma de reservas para universidades o empresas donde los usuarios puedan reservar salas, laboratorios y equipos, mientras los administradores gestionan recursos, usuarios y estadísticas. El énfasis del proyecto está en reglas de negocio, concurrencia, seguridad y testing automatizado.
+
+Alcance funcional
+Módulos
+
+Módulo
+
+	
+
+Estado
+
+
+
+
+Autenticación JWT
+
+	
+
+Obligatorio
+
+
+
+
+Gestión de usuarios
+
+	
+
+Obligatorio
+
+
+
+
+Gestión de recursos
+
+	
+
+Obligatorio
+
+
+
+
+Reservas
+
+	
+
+Obligatorio
+
+
+
+
+Dashboard administrativo
+
+	
+
+Obligatorio
+
+
+
+
+Estadísticas
+
+	
+
+Obligatorio
+
+
+
+
+Testing automatizado
+
+	
+
+Obligatorio
+
+Pantallas del sistema
+
+Las pantallas que propones son correctas. Yo agregaría dos más porque aportan bastante valor y reutilizan las mismas entidades.
+
+1. Login
+
+Inicio de sesión con JWT, validación de credenciales y recordar sesión.
+
+2. Register
+
+Registro de estudiantes con validación de email único.
+
+3. Student Dashboard
+
+Próxima reserva, recursos disponibles hoy, acceso rápido y resumen personal.
+
+4. Resources
+
+Catálogo con filtros por tipo, capacidad, estado y búsqueda.
+
+5. Resource Details
+
+Información completa, calendario de ocupación y botón Reservar.
+
+6. Create Reservation
+
+Fecha, hora, propósito y validación en tiempo real.
+
+7. My Reservations
+
+Historial, reservas activas, cancelar y filtrar por estado.
+
+8. Reservation Details
+
+Estado, horario, recurso, usuario y acciones disponibles.
+
+9. Admin Dashboard
+
+KPIs, ocupación, reservas por día y recursos más utilizados.
+
+10. Resource Management
+
+Crear, editar, desactivar y cambiar estados.
+
+11. User Management
+
+Cambiar roles, desactivar usuarios y búsqueda.
+
+12. Reservation Calendar (agregada)
+
+Vista semanal tipo Google Calendar para visualizar ocupación.
+
+13. Profile (agregada)
+
+Editar nombre, contraseña y preferencias básicas.
+
+13 pantallas es un tamaño muy razonable para un proyecto de portafolio; ya empieza a verse como una aplicación real.
+
+Arquitectura completa
+reservehub/
+
+backend/
+│
+├── config
+├── security
+├── controller
+├── service
+├── repository
+├── dto
+├── entity
+├── exception
+└── util
+
+frontend/
+│
+├── pages
+├── components
+├── layouts
+├── hooks
+├── services
+└── types
+
+database/
+├── docker-compose
+└── init.sql
+Modelo de datos completo
+User
+
+Campo
+
+	
+
+Tipo
+
+
+
+
+id
+
+	
+
+Long
+
+
+
+
+firstName
+
+	
+
+String
+
+
+
+
+lastName
+
+	
+
+String
+
+
+
+
+email
+
+	
+
+String
+
+
+
+
+password
+
+	
+
+String (BCrypt)
+
+
+
+
+role
+
+	
+
+UserRole
+
+
+
+
+enabled
+
+	
+
+Boolean
+
+
+
+
+createdAt
+
+	
+
+LocalDateTime
+
+Resource
+
+Campo
+
+	
+
+Tipo
+
+
+
+
+id
+
+	
+
+Long
+
+
+
+
+name
+
+	
+
+String
+
+
+
+
+description
+
+	
+
+String
+
+
+
+
+type
+
+	
+
+ResourceType
+
+
+
+
+capacity
+
+	
+
+Integer
+
+
+
+
+location
+
+	
+
+String
+
+
+
+
+status
+
+	
+
+ResourceStatus
+
+
+
+
+createdAt
+
+	
+
+LocalDateTime
+
+Reservation
+
+Campo
+
+	
+
+Tipo
+
+
+
+
+id
+
+	
+
+Long
+
+
+
+
+user
+
+	
+
+User
+
+
+
+
+resource
+
+	
+
+Resource
+
+
+
+
+startTime
+
+	
+
+LocalDateTime
+
+
+
+
+endTime
+
+	
+
+LocalDateTime
+
+
+
+
+purpose
+
+	
+
+String
+
+
+
+
+status
+
+	
+
+ReservationStatus
+
+
+
+
+createdAt
+
+	
+
+LocalDateTime
+
+RefreshToken
+
+Campo
+
+	
+
+Tipo
+
+
+id
+
+	
+
+Long
+
+
+token
+
+	
+
+String
+
+
+user
+
+	
+
+User
+
+
+expiresAt
+
+	
+
+LocalDateTime
+
+
+revoked
+
+	
+
+Boolean
+
+Enums
+UserRole
+STUDENT
+ADMIN
+ResourceType
+ROOM
+LABORATORY
+EQUIPMENT
+ResourceStatus
+AVAILABLE
+MAINTENANCE
+INACTIVE
+ReservationStatus
+ACTIVE
+CANCELLED
+COMPLETED
+Flujo principal del sistema
+
+El estudiante nunca administra recursos; el administrador nunca necesita reservar para usar el sistema.
+
+Casos de uso
+Estudiante
+
+Registrarse
+
+Iniciar sesión
+
+Ver recursos
+
+Filtrar recursos
+
+Ver disponibilidad
+
+Crear reserva
+
+Cancelar reserva
+
+Ver historial
+
+Administrador
+
+Crear recursos
+
+Editar recursos
+
+Cambiar estado
+
+Gestionar usuarios
+
+Ver estadísticas
+
+Ver todas las reservas
+
+Reglas de negocio
+Recursos
+
+Regla
+
+	
+
+Prioridad
+
+
+
+
+Capacidad mayor a 0
+
+	
+
+Alta
+
+
+
+
+Estado inicial AVAILABLE
+
+	
+
+Alta
+
+
+
+
+INACTIVE no reservable
+
+	
+
+Alta
+
+
+
+
+MAINTENANCE no reservable
+
+	
+
+Alta
+
+Reservas
+
+Regla
+
+	
+
+Prioridad
+
+
+
+
+Usuario debe existir
+
+	
+
+Alta
+
+
+
+
+Recurso debe existir
+
+	
+
+Alta
+
+
+
+
+Inicio menor que fin
+
+	
+
+Alta
+
+
+
+
+No permitir pasado
+
+	
+
+Alta
+
+
+
+
+No permitir solapamiento
+
+	
+
+Crítica
+
+
+
+
+Máximo 3 reservas activas por estudiante
+
+	
+
+Media
+
+
+
+
+Canceladas liberan horario
+
+	
+
+Alta
+
+Ese límite de 3 reservas activas agrega otra regla interesante para entrevistas y solo requiere una consulta adicional.
+
+Endpoints finales (20)
+Auth
+POST   /api/auth/register
+POST   /api/auth/login
+GET    /api/users/me
+Resources
+GET    /api/resources
+GET    /api/resources/{id}
+POST   /api/resources
+PUT    /api/resources/{id}
+PATCH  /api/resources/{id}/status
+Reservations
+GET    /api/reservations
+GET    /api/reservations/{id}
+GET    /api/reservations/my
+POST   /api/reservations
+PATCH  /api/reservations/{id}/cancel
+Admin
+GET    /api/admin/dashboard
+GET    /api/admin/users
+GET    /api/admin/users/{id}
+PATCH  /api/admin/users/{id}/role
+PATCH  /api/admin/users/{id}/status
+GET    /api/admin/resources/statistics
+GET    /api/admin/reservations
+Testing obligatorio
+
+Unit (JUnit + Mockito)
+
+ResourceService, ReservationService y AuthService.
+
+Integration (Testcontainers)
+
+PostgreSQL real, repositories y transacciones.
+
+E2E (Playwright)
+
+Login → Crear reserva → Verificar dashboard → Cancelar.
+
+CI/CD
+
+GitHub Actions ejecutará automáticamente:
+
+Build
+ ↓
+Unit Tests
+ ↓
+Integration Tests
+ ↓
+Coverage
+
+No hará despliegue; para un portafolio es suficiente demostrar integración continua.
+
+Lo que hace que este proyecto tenga peso
+
+No será la cantidad de pantallas, sino estas decisiones técnicas:
+
+Característica
+
+	
+
+Valor
+
+
+
+
+JWT + Roles
+
+	
+
+Alto
+
+
+
+
+DTOs separados
+
+	
+
+Alto
+
+
+
+
+Arquitectura por capas
+
+	
+
+Alto
+
+
+
+
+Manejo global de excepciones
+
+	
+
+Alto
+
+
+
+
+Concurrencia con PESSIMISTIC_WRITE
+
+	
+
+Muy alto
+
+
+
+
+Testcontainers
+
+	
+
+Muy alto
+
+
+
+
+Playwright
+
+	
+
+Alto
+
+
+
+
+Dashboard con métricas
+
+	
+
+Medio-Alto
+
+Alcance final
+
+Área
+
+	
+
+Cantidad aproximada
+
+
+
+
+Entidades
+
+	
+
+4
+
+
+
+
+Enums
+
+	
+
+4
+
+
+
+
+DTOs
+
+	
+
+10–12
+
+
+
+
+Controllers
+
+	
+
+4
+
+
+
+
+Services
+
+	
+
+4
+
+
+
+
+Repositories
+
+	
+
+4
+
+
+
+
+Pantallas React
+
+	
+
+13
+
+
+
+
+Endpoints REST
+
+	
+
+20
+
+
+
+
+Tests
+
+	
+
+35–45

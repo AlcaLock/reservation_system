@@ -52,4 +52,27 @@ public class GlobalExceptionHandler {
                                 HttpStatus.BAD_REQUEST.value(),
                                 ex.getMessage());
         }
+
+                @ExceptionHandler(UserNotFoundException.class)
+                @ResponseStatus(HttpStatus.NOT_FOUND)
+                public ErrorResponse handleUserNotFound(UserNotFoundException ex) {
+                        return new ErrorResponse(
+                                        HttpStatus.NOT_FOUND.value(), ex.getMessage());
+                }
+
+                @ExceptionHandler(ReservationNotFoundException.class)
+                @ResponseStatus(HttpStatus.NOT_FOUND)
+                public ErrorResponse handleReservationNotFound(
+                                ReservationNotFoundException ex) {
+                        return new ErrorResponse(
+                                        HttpStatus.NOT_FOUND.value(), ex.getMessage());
+                }
+
+                @ExceptionHandler(ReservationStatusException.class)
+                @ResponseStatus(HttpStatus.CONFLICT)
+                public ErrorResponse handleReservationStatus(
+                                ReservationStatusException ex) {
+                        return new ErrorResponse(
+                                        HttpStatus.CONFLICT.value(), ex.getMessage());
+                }
 }
