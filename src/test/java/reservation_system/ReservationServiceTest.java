@@ -70,7 +70,7 @@ class ReservationServiceTest {
         );
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(resourceRepository.findById(2L)).thenReturn(Optional.of(resource));
+        when(resourceRepository.findByIdForUpdate(2L)).thenReturn(Optional.of(resource));
         when(reservationRepository.countByUserAndStatus(user, ReservationStatus.ACTIVE))
                 .thenReturn(0L);
         when(reservationRepository
@@ -99,7 +99,7 @@ class ReservationServiceTest {
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage("User with id 1 not found.");
 
-        verify(resourceRepository, never()).findById(2L);
+        verify(resourceRepository, never()).findByIdForUpdate(2L);
         verify(reservationRepository, never()).save(any(Reservation.class));
     }
 
@@ -115,7 +115,7 @@ class ReservationServiceTest {
         CreateReservationRequest request = requestAt(4);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(resourceRepository.findById(2L)).thenReturn(Optional.of(resource));
+        when(resourceRepository.findByIdForUpdate(2L)).thenReturn(Optional.of(resource));
         when(reservationRepository.countByUserAndStatus(user, ReservationStatus.ACTIVE))
                 .thenReturn(3L);
 
@@ -176,6 +176,8 @@ class ReservationServiceTest {
 
         verify(reservationRepository, never()).save(any(Reservation.class));
     }
+
+    
 
     private CreateReservationRequest requestAt(int daysFromNow) {
         CreateReservationRequest request = new CreateReservationRequest();

@@ -1,0 +1,7 @@
+ALTER TABLE users ADD COLUMN IF NOT EXISTS enabled BOOLEAN;
+
+UPDATE users
+SET enabled = TRUE
+WHERE enabled IS NULL;
+
+ALTER TABLE users ALTER COLUMN enabled SET NOT NULL;

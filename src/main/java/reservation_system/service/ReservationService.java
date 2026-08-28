@@ -46,13 +46,11 @@ public class ReservationService {
 
 @Transactional
 public ReservationResponse create(CreateReservationRequest request) {
-
     User user = userRepository.findById(request.getUserId())
-        .orElseThrow(() -> new UserNotFoundException(request.getUserId()));
+            .orElseThrow(() -> new UserNotFoundException(request.getUserId()));
 
-    Resource resource = resourceRepository.findById(request.getResourceId())
-            .orElseThrow(() ->
-                    new ResourceNotFoundException(request.getResourceId()));
+    Resource resource = resourceRepository.findByIdForUpdate(request.getResourceId())
+            .orElseThrow(() -> new ResourceNotFoundException(request.getResourceId()));
 
     if (resource.getStatus() != ResourceStatus.AVAILABLE) {
         throw new ResourceUnavailableException();
@@ -63,9 +61,7 @@ public ReservationResponse create(CreateReservationRequest request) {
     }
 
     if (request.getStartTime().isBefore(LocalDateTime.now())) {
-        throw new InvalidReservationTimeException(
-                "Start time cannot be in the past."
-        );
+        throw new InvalidReservationTimeException("Start time cannot be in the past.");
     }
 
     long activeReservations = reservationRepository.countByUserAndStatus(
@@ -80,12 +76,12 @@ public ReservationResponse create(CreateReservationRequest request) {
     }
 
     boolean overlap = reservationRepository
-    .existsByResourceAndStatusAndStartTimeLessThanAndEndTimeGreaterThan(
-        resource,
-        ReservationStatus.ACTIVE,
-        request.getEndTime(),
-        request.getStartTime()
-    );
+            .existsByResourceAndStatusAndStartTimeLessThanAndEndTimeGreaterThan(
+                    resource,
+                    ReservationStatus.ACTIVE,
+                    request.getEndTime(),
+                    request.getStartTime()
+            );
 
     if (overlap) {
         throw new ReservationConflictException();
