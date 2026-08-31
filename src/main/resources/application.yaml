@@ -1,3 +1,12 @@
+app:
+  security:
+    enabled: false
+
+jwt:
+  secret: "c2VjdXJlLWFwcC1zaWduaW5nLWtleS1mb3ItZGV2ZWxvcG1lbnQ="
+  expiration: 3600000
+  refresh-expiration: 604800000
+
 spring:
   application:
     name: Artifact-reservation-system
