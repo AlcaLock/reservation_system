@@ -33,7 +33,7 @@ import reservation_system.repository.ResourceRepository;
 import reservation_system.repository.UserRepository;
 import reservation_system.service.ReservationService;
 
-@SpringBootTest
+@SpringBootTest(properties = "app.demo-data.enabled=false")
 @Testcontainers(disabledWithoutDocker = true)
 class ReservationConcurrencyIntegrationTest {
 
