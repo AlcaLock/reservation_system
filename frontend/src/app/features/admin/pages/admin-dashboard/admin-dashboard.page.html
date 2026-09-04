@@ -1,0 +1,95 @@
+<section class="admin-dashboard">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Panel administrativo</p>
+      <h1>Dashboard operativo</h1>
+    </div>
+    <div class="user-pill">
+      <svg lucideUsers [size]="16" aria-hidden="true"></svg>
+      <span>{{ fullName() }}</span>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="state-card" role="status">Cargando panel administrativo...</div>
+  } @else if (error(); as errorMessage) {
+    <div class="state-card error" role="alert">
+      <p>{{ errorMessage }}</p>
+      <button type="button" (click)="loadDashboard()">Reintentar</button>
+    </div>
+  } @else {
+    @if (dashboard(); as summary) {
+      <div class="stats-grid">
+        @for (card of summaryCards(); track card.label) {
+          <article class="stat-card" [class]="card.tone">
+            <span>{{ card.label }}</span>
+            <strong>{{ card.value }}</strong>
+          </article>
+        }
+      </div>
+
+      <div class="content-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Reservas de la última semana</h2>
+            <svg lucideCalendarRange [size]="18" aria-hidden="true"></svg>
+          </div>
+          <div class="chart-bars" aria-label="Estadísticas semanales de reservas">
+            @for (day of summary.reservationsByDay; track day.date) {
+              <div class="bar-group">
+                <span class="bar" [style.height.%]="barHeight(day.count)"></span>
+                <small>{{ shortDate(day.date) }}</small>
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Recursos más utilizados</h2>
+            <svg lucideArrowRight [size]="18" aria-hidden="true"></svg>
+          </div>
+          <ul class="usage-list">
+            @for (resource of summary.mostUsedResources; track resource.resourceId) {
+              <li>
+                <div>
+                  <strong>{{ resource.resourceName }}</strong>
+                  <small>{{ resource.usageCount }} reservas</small>
+                </div>
+                <span>{{ resource.usageCount }}</span>
+              </li>
+            }
+          </ul>
+        </article>
+      </div>
+
+      <div class="bottom-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Estado del inventario</h2>
+          </div>
+          @if (resourceStats(); as stats) {
+            <div class="inventory-grid">
+              <div><span>Total</span><strong>{{ stats.totalResources }}</strong></div>
+              <div><span>Disponibles</span><strong>{{ stats.availableResources }}</strong></div>
+              <div><span>Mantenimiento</span><strong>{{ stats.maintenanceResources }}</strong></div>
+              <div><span>Inactivos</span><strong>{{ stats.inactiveResources }}</strong></div>
+            </div>
+          }
+        </article>
+
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Alertas</h2>
+            <svg lucideAlertTriangle [size]="18" aria-hidden="true"></svg>
+          </div>
+          <ul class="alert-list">
+            @for (alert of summary.recentAlerts; track alert) {
+              <li>{{ alert }}</li>
+            }
+          </ul>
+        </article>
+      </div>
+    }
+  }
+</section>

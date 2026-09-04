@@ -1,0 +1,33 @@
+<section class="calendar-page">
+  <div class="calendar-heading">
+    <div><p class="eyebrow">Disponibilidad</p><h1>Calendario semanal</h1><p>Visualiza la ocupación de salas, laboratorios y equipos por horario.</p></div>
+    <div class="calendar-actions">
+      <button class="today-button" type="button" (click)="currentWeek()"><svg lucideRotateCcw [size]="15" aria-hidden="true"></svg>Semana actual</button>
+      <div class="week-navigation"><button type="button" (click)="previousWeek()" aria-label="Semana anterior"><svg lucideChevronLeft [size]="19" aria-hidden="true"></svg></button><strong>{{ weekLabel() }}</strong><button type="button" (click)="nextWeek()" aria-label="Semana siguiente"><svg lucideChevronRight [size]="19" aria-hidden="true"></svg></button></div>
+    </div>
+  </div>
+
+  <div class="legend"><span><i class="room"></i>Salas</span><span><i class="laboratory"></i>Laboratorios</span><span><i class="equipment"></i>Equipos</span></div>
+
+  @if (isLoading()) { <div class="calendar-state" role="status">Cargando calendario...</div> }
+  @else if (error(); as errorMessage) { <div class="calendar-state error" role="alert"><p>{{ errorMessage }}</p><button type="button" (click)="currentWeek()">Reintentar</button></div> }
+  @else {
+    <div class="calendar-scroll">
+      <div class="calendar-grid">
+        <div class="time-corner"></div>
+        @for (day of days(); track day.shortDate) { <div class="day-header"><span>{{ day.label }}</span><strong>{{ day.shortDate }}</strong></div> }
+        <div class="time-column">@for (hour of hours; track hour) { <div>{{ hour.toString().padStart(2, '0') }}:00</div> }</div>
+        @for (day of days(); track day.shortDate) {
+          <div class="day-column">
+            @for (hour of hours; track hour) { <div class="hour-slot"></div> }
+            @for (reservation of reservationsForDay(day); track reservation.id) {
+              <article class="calendar-event" [class]="resourceTypeClass(reservation.resourceId)" [style.top]="reservationStyle(reservation).top" [style.height]="reservationStyle(reservation).height">
+                <strong>{{ resourceName(reservation.resourceId) }}</strong><span>{{ reservationTime(reservation) }}</span><small>{{ reservation.purpose }}</small>
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

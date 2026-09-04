@@ -1,0 +1,77 @@
+<section class="admin-resources">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Gestión de recursos</h1>
+      <p class="description">Crea, actualiza y controla la disponibilidad del inventario.</p>
+    </div>
+    <button class="primary-button" type="button" (click)="startCreate()">Nuevo recurso</button>
+  </header>
+
+  @if (feedback(); as message) {
+    <div class="feedback success" role="status">{{ message }}</div>
+  }
+  @if (error(); as errorMessage) {
+    <div class="feedback error" role="alert">
+      <span>{{ errorMessage }}</span>
+      <button type="button" (click)="loadResources()">Reintentar</button>
+    </div>
+  }
+
+  <div class="content-grid">
+    <section class="table-panel">
+      @if (isLoading()) {
+        <div class="empty-state">Cargando recursos...</div>
+      } @else if (resources().length === 0) {
+        <div class="empty-state">No hay recursos registrados.</div>
+      } @else {
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Recurso</th><th>Tipo</th><th>Capacidad</th><th>Estado</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+              @for (resource of resources(); track resource.id) {
+                <tr>
+                  <td><strong>{{ resource.name }}</strong><small>{{ resource.location }}</small></td>
+                  <td>{{ typeLabel(resource.type) }}</td>
+                  <td>{{ resource.capacity }}</td>
+                  <td>
+                    <select [ngModel]="resource.status" (ngModelChange)="changeStatus(resource, $event)" aria-label="Estado del recurso">
+                      <option value="AVAILABLE">Disponible</option>
+                      <option value="MAINTENANCE">Mantenimiento</option>
+                      <option value="INACTIVE">Inactivo</option>
+                    </select>
+                  </td>
+                  <td><button class="text-button" type="button" (click)="startEdit(resource)">Editar</button></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    @if (editingId() !== null || feedback() === null) {
+      <aside class="form-panel">
+        <div class="form-heading">
+          <div>
+            <p class="eyebrow">{{ editingId() === null ? 'Alta' : 'Edición' }}</p>
+            <h2>{{ editingId() === null ? 'Nuevo recurso' : 'Editar recurso' }}</h2>
+          </div>
+          @if (editingId() !== null) { <button class="text-button" type="button" (click)="cancelEdit()">Cancelar</button> }
+        </div>
+        <form (ngSubmit)="saveResource()">
+          <label>Nombre<input name="name" [ngModel]="name()" (ngModelChange)="name.set($event)" required maxlength="120" /></label>
+          <label>Descripción<textarea name="description" [ngModel]="description()" (ngModelChange)="description.set($event)" maxlength="500" rows="3"></textarea></label>
+          <div class="form-row">
+            <label>Tipo<select name="type" [ngModel]="type()" (ngModelChange)="type.set($event)"><option value="ROOM">Sala</option><option value="LABORATORY">Laboratorio</option><option value="EQUIPMENT">Equipo</option></select></label>
+            <label>Capacidad<input name="capacity" type="number" min="1" [ngModel]="capacity()" (ngModelChange)="capacity.set($event === '' ? null : +$event)" required /></label>
+          </div>
+          <label>Ubicación<input name="location" [ngModel]="location()" (ngModelChange)="location.set($event)" required maxlength="150" /></label>
+          <button class="primary-button full-width" type="submit" [disabled]="isSaving()">{{ isSaving() ? 'Guardando...' : 'Guardar recurso' }}</button>
+        </form>
+      </aside>
+    }
+  </div>
+</section>

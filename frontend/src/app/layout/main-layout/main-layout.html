@@ -1,0 +1,33 @@
+<main class="workspace">
+  <header class="topbar">
+    <a class="brand" [routerLink]="isAdmin() ? '/app/admin' : '/app/resources'" aria-label="ReserveHub, catálogo de recursos">
+      <span class="brand-mark" aria-hidden="true">RH</span>
+      <span>ReserveHub</span>
+    </a>
+
+    <nav aria-label="Navegación principal">
+      @if (isAdmin()) {
+        <a routerLink="/app/admin" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/app/admin/resources" routerLinkActive="active">Recursos</a>
+        <a routerLink="/app/admin/users" routerLinkActive="active">Usuarios</a>
+      } @else {
+        <a routerLink="/app/resources" routerLinkActive="active">Recursos</a>
+        <a routerLink="/app/reservations" routerLinkActive="active">Mis reservas</a>
+        <a routerLink="/app/calendar" routerLinkActive="active">Calendario</a>
+      }
+    </nav>
+
+    <div class="profile-cluster">
+      <button class="profile-button" type="button" aria-label="Abrir perfil" (click)="openProfile()">
+        <svg lucideUsersRound [size]="18" aria-hidden="true"></svg>
+        <span>{{ userLabel() }}</span>
+      </button>
+      <button class="logout-button" type="button" (click)="logout()" aria-label="Cerrar sesión">
+        <svg lucideLogOut [size]="16" aria-hidden="true"></svg>
+        <span>Salir</span>
+      </button>
+    </div>
+  </header>
+
+  <router-outlet />
+</main>

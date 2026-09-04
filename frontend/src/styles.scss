@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+	--page: #f3f6fa;
+	--surface: #ffffff;
+	--ink: #1f2a3a;
+	--muted: #64748b;
+	--line: #dbe3ec;
+	--primary: #245c8e;
+	--primary-dark: #1b466d;
+	--success: #248b6a;
+	--warning: #c98220;
+	--danger: #bf4a4a;
+	--room: #3979b8;
+	--laboratory: #268b85;
+	--equipment: #c46b3a;
+	--body-font: 'Plus Jakarta Sans', sans-serif;
+	--mono-font: 'DM Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--page); }
+body { min-width: 320px; margin: 0; background: var(--page); color: var(--ink); font-family: var(--body-font); }
+button, input, select { font-family: inherit; }

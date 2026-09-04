@@ -1,0 +1,44 @@
+<main class="login-shell">
+  <section class="login-panel">
+    <div class="brand-block">
+      <div class="brand-mark">RH</div>
+      <div>
+        <p class="eyebrow">ReserveHub</p>
+        <h1>Acceso al sistema</h1>
+      </div>
+    </div>
+
+    <p class="lead">Selecciona el tipo de perfil e ingresa tus credenciales.</p>
+
+    <div class="account-grid" role="list">
+      @for (account of demoAccounts; track account.role) {
+        <button
+          type="button"
+          class="account-card"
+          [class.selected]="selectedRole() === account.role"
+          (click)="selectRole(account.role)"
+        >
+          <div class="account-header">
+            @if (account.role === 'ADMIN') {
+              <svg lucideShieldCheck [size]="18" aria-hidden="true"></svg>
+            } @else {
+              <svg lucideUsersRound [size]="18" aria-hidden="true"></svg>
+            }
+            <span>{{ account.title }}</span>
+          </div>
+          <strong>{{ account.name }}</strong>
+          <small>{{ account.email }}</small>
+          <p>{{ account.description }}</p>
+        </button>
+      }
+    </div>
+
+    <label class="password-field">Contraseña<input type="password" name="password" [ngModel]="password()" (ngModelChange)="password.set($event)" required /></label>
+    @if (error(); as errorMessage) { <p class="login-error" role="alert">{{ errorMessage }}</p> }
+
+    <button class="login-button" type="button" (click)="submit()" [disabled]="isSubmitting() || !password()">
+      {{ isSubmitting() ? 'Accediendo...' : 'Entrar al panel' }}
+    </button>
+    <a class="register-link" routerLink="/register">Crear una cuenta</a>
+  </section>
+</main>

@@ -1,0 +1,75 @@
+<section class="admin-users">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Gestión de usuarios</h1>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <label class="search-box">
+      <svg lucideSearch [size]="16" aria-hidden="true"></svg>
+      <input
+        type="search"
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
+        placeholder="Buscar por nombre o correo"
+        aria-label="Buscar usuarios"
+      />
+    </label>
+    <button type="button" class="primary-button" (click)="loadUsers()">Buscar</button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="state-card" role="status">Cargando usuarios...</div>
+  } @else if (error(); as errorMessage) {
+    <div class="state-card error" role="alert">
+      <p>{{ errorMessage }}</p>
+      <button type="button" (click)="loadUsers()">Reintentar</button>
+    </div>
+  } @else {
+    <div class="table-panel">
+      <table>
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar">{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</div>
+                  <div>
+                    <strong><a [routerLink]="['/app/admin/users', user.id]">{{ fullName(user) }}</a></strong>
+                    <small>{{ user.email }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <select [ngModel]="user.role" (ngModelChange)="updateRole(user, $event)">
+                  <option value="STUDENT">Estudiante</option>
+                  <option value="ADMIN">Administrador</option>
+                </select>
+              </td>
+              <td>
+                <span class="status-badge" [class.enabled]="user.enabled" [class.disabled]="!user.enabled">
+                  {{ statusLabel(user.enabled) }}
+                </span>
+              </td>
+              <td>
+                <button type="button" class="toggle-button" (click)="toggleStatus(user)" [disabled]="updatingStatusId() === user.id">
+                  {{ updatingStatusId() === user.id ? 'Actualizando...' : (user.enabled ? 'Desactivar' : 'Activar') }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

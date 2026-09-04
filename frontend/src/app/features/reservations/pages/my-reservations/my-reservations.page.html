@@ -1,0 +1,45 @@
+<section class="my-reservations">
+  <div class="section-heading">
+    <div><p class="eyebrow">Mi agenda</p><h1>Mis reservas</h1><p>Consulta, organiza o cancela las reservas de tu cuenta.</p></div>
+    <button class="refresh-button" type="button" (click)="loadReservations()">Actualizar</button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="reservation-empty-state" role="status">Cargando reservas...</div>
+  } @else if (error(); as errorMessage) {
+    <div class="reservation-empty-state error" role="alert"><p>{{ errorMessage }}</p><button type="button" (click)="loadReservations()">Reintentar</button></div>
+  } @else {
+    <div class="reservation-layout">
+      <div>
+        <div class="list-title"><h2>Activas</h2><span>{{ activeReservations().length }}</span></div>
+        @if (activeReservations().length === 0) { <p class="empty-list">No tienes reservas activas.</p> }
+        @else {
+          <div class="reservation-list">
+            @for (reservation of activeReservations(); track reservation.id) {
+              <article class="reservation-row active">
+                <div class="reservation-date"><span>{{ reservationDateLabel(reservation.startTime) }}</span><small>hasta {{ reservationDateLabel(reservation.endTime) }}</small></div>
+                <div><h3><a [routerLink]="['/app/reservations', reservation.id]">{{ resourceName(reservation.resourceId) }}</a></h3><p>{{ reservation.purpose }}</p></div>
+                <button type="button" (click)="cancelReservation(reservation)" [disabled]="cancellingReservationId() === reservation.id"><svg lucideCircleX [size]="16" aria-hidden="true"></svg>{{ cancellingReservationId() === reservation.id ? 'Cancelando...' : 'Cancelar' }}</button>
+              </article>
+            }
+          </div>
+        }
+      </div>
+      <div>
+        <div class="list-title"><h2>Historial</h2><span>{{ reservationHistory().length }}</span></div>
+        @if (reservationHistory().length === 0) { <p class="empty-list">Aún no hay reservas finalizadas o canceladas.</p> }
+        @else {
+          <div class="reservation-list history">
+            @for (reservation of reservationHistory(); track reservation.id) {
+              <article class="reservation-row">
+                <div class="reservation-date"><span>{{ reservationDateLabel(reservation.startTime) }}</span></div>
+                <div><h3><a [routerLink]="['/app/reservations', reservation.id]">{{ resourceName(reservation.resourceId) }}</a></h3><p>{{ reservation.purpose }}</p></div>
+                <span class="reservation-status">{{ reservationStatusLabel(reservation.status) }}</span>
+              </article>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

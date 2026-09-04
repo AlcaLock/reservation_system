@@ -1,0 +1,70 @@
+<section class="catalog">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Catálogo</p>
+      <h1>Recursos para cada jornada</h1>
+      <p class="description">Consulta disponibilidad, capacidad y ubicación antes de crear una reserva.</p>
+    </div>
+    <div class="availability-summary"><span class="summary-value">{{ availableCount() }}</span><span>recursos disponibles</span></div>
+  </div>
+
+  <form class="filter-panel" (ngSubmit)="loadResources()">
+    <div class="search-field"><svg lucideSearch [size]="19" aria-hidden="true"></svg><input type="search" name="search" [ngModel]="search()" (ngModelChange)="search.set($event)" placeholder="Buscar por nombre o descripción" aria-label="Buscar recursos" /></div>
+    <label><span>Tipo</span><select name="type" [ngModel]="type()" (ngModelChange)="type.set($event)"><option value="">Todos</option><option value="ROOM">Salas</option><option value="LABORATORY">Laboratorios</option><option value="EQUIPMENT">Equipos</option></select></label>
+    <label><span>Capacidad mínima</span><input type="number" name="capacity" min="1" [ngModel]="minCapacity()" (ngModelChange)="minCapacity.set($event === '' ? null : +$event)" /></label>
+    <button class="filter-button" type="submit"><svg lucideSlidersHorizontal [size]="17" aria-hidden="true"></svg>Aplicar filtros</button>
+    <button class="clear-button" type="button" (click)="clearFilters()">Limpiar</button>
+  </form>
+
+  @if (isLoading()) {
+    <div class="message-state" role="status">Cargando recursos...</div>
+  } @else if (error(); as errorMessage) {
+    <div class="message-state error" role="alert"><p>{{ errorMessage }}</p><button type="button" (click)="loadResources()">Reintentar</button></div>
+  } @else if (resources().length === 0) {
+    <div class="message-state"><p>No hay recursos que coincidan con los filtros seleccionados.</p><button type="button" (click)="clearFilters()">Restablecer catálogo</button></div>
+  } @else {
+    <div class="result-bar"><span>{{ resources().length }} resultados</span><span class="availability-key"><i></i>Disponible para reservar</span></div>
+    <div class="resource-grid">
+      @for (resource of resources(); track resource.id) {
+        <article class="resource-card" [class.room]="resource.type === 'ROOM'" [class.laboratory]="resource.type === 'LABORATORY'" [class.equipment]="resource.type === 'EQUIPMENT'">
+          <div class="card-topline">
+            <span class="resource-type">
+              @if (resource.type === 'ROOM') { <svg lucideUsers [size]="16" aria-hidden="true"></svg> }
+              @else if (resource.type === 'LABORATORY') { <svg lucideFlaskConical [size]="16" aria-hidden="true"></svg> }
+              @else { <svg lucideMonitorUp [size]="16" aria-hidden="true"></svg> }
+              {{ typeLabel(resource.type) }}
+            </span>
+            <span class="status" [class.available]="resource.status === 'AVAILABLE'">{{ statusLabel(resource.status) }}</span>
+          </div>
+          <h2><a [routerLink]="['/app/resources', resource.id]">{{ resource.name }}</a></h2>
+          <p class="resource-description">{{ resource.description || 'Sin descripción adicional.' }}</p>
+          <dl>
+            <div><dt><svg lucideMapPin [size]="13" aria-hidden="true"></svg>Ubicación</dt><dd>{{ resource.location }}</dd></div>
+            <div><dt><svg lucideUsers [size]="13" aria-hidden="true"></svg>Capacidad</dt><dd>{{ capacityLabel(resource.capacity) }}</dd></div>
+          </dl>
+          <button type="button" [disabled]="resource.status !== 'AVAILABLE'" (click)="openReservation(resource)">{{ resource.status === 'AVAILABLE' ? 'Reservar recurso' : 'No disponible' }}</button>
+        </article>
+      }
+    </div>
+  }
+</section>
+
+@if (selectedResource(); as resource) {
+  <div class="reservation-backdrop" (click)="closeReservation()">
+    <aside class="reservation-panel" role="dialog" aria-modal="true" aria-labelledby="reservation-title" (click)="$event.stopPropagation()">
+      <div class="panel-header"><div><p class="eyebrow">Nueva reserva</p><h2 id="reservation-title">{{ resource.name }}</h2></div><button class="icon-button" type="button" (click)="closeReservation()" aria-label="Cerrar formulario de reserva"><svg lucideX [size]="20" aria-hidden="true"></svg></button></div>
+      @if (reservationSuccess(); as successMessage) {
+        <div class="reservation-feedback success" role="status"><svg lucideCircleCheckBig [size]="20" aria-hidden="true"></svg><p>{{ successMessage }}</p></div>
+      } @else {
+        <p class="resource-context"><svg lucideMapPin [size]="15" aria-hidden="true"></svg>{{ resource.location }} · {{ capacityLabel(resource.capacity) }}</p>
+        <form class="reservation-form" (ngSubmit)="createReservation()">
+          <label><span><svg lucideCalendarDays [size]="15" aria-hidden="true"></svg>Inicio</span><input type="datetime-local" name="startTime" [ngModel]="reservationStart()" (ngModelChange)="reservationStart.set($event)" required /></label>
+          <label><span><svg lucideClock3 [size]="15" aria-hidden="true"></svg>Finalización</span><input type="datetime-local" name="endTime" [ngModel]="reservationEnd()" (ngModelChange)="reservationEnd.set($event)" required /></label>
+          <label><span>Propósito</span><textarea name="purpose" rows="4" maxlength="250" [ngModel]="reservationPurpose()" (ngModelChange)="reservationPurpose.set($event)" placeholder="Ej. Sesión de estudio en equipo" required></textarea></label>
+          @if (reservationError(); as errorMessage) { <p class="reservation-feedback error" role="alert">{{ errorMessage }}</p> }
+          <button class="submit-reservation" type="submit" [disabled]="isSubmittingReservation()">{{ isSubmittingReservation() ? 'Creando reserva...' : 'Confirmar reserva' }}</button>
+        </form>
+      }
+    </aside>
+  </div>
+}
