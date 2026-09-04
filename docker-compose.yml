@@ -4,13 +4,36 @@ services:
     container_name: reservation-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: reservation_db
-      POSTGRES_USER: reservation_user
-      POSTGRES_PASSWORD: reservation_password
+      POSTGRES_DB: ${POSTGRES_DB:-reservation_db}
+      POSTGRES_USER: ${POSTGRES_USER:-reservation_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reservation_password}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-reservation_user} -d ${POSTGRES_DB:-reservation_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-reservation_db}
+      DB_USERNAME: ${POSTGRES_USER:-reservation_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-reservation_password}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env before starting the stack}
+      APP_CORS_ALLOWED_ORIGIN: ${APP_CORS_ALLOWED_ORIGIN:-http://localhost:4200}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
 
 volumes:
   postgres_data:

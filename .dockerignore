@@ -1,0 +1,13 @@
+.git
+.github
+.gitignore
+.env
+.env.*
+!.env.example
+target
+frontend/node_modules
+frontend/dist
+frontend/.angular
+out-tsc
+*.log
+*.tmp

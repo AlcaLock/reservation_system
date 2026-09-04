@@ -1,6 +1,13 @@
 HELP.md
 target/
+out.txt
+tmp_mvn_test.log
 .mvn/wrapper/maven-wrapper.jar
+.env
+.env.*
+!.env.example
+*.pem
+*.key
 !**/src/main/**/target/
 !**/src/test/**/target/
 
