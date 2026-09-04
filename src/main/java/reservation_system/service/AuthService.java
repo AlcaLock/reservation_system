@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import reservation_system.config.JwtService;
 import reservation_system.dto.AuthResponse;
@@ -39,7 +40,8 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-    public AuthResponse register(RegisterRequest request) {
+        @Transactional
+        public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already registered.");
         }
@@ -67,7 +69,8 @@ public class AuthService {
         );
     }
 
-    public AuthResponse login(LoginRequest request) {
+        @Transactional
+        public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
@@ -90,14 +93,22 @@ public class AuthService {
         );
     }
 
-    public AuthResponse refresh(String refreshTokenValue) {
-        if (!jwtService.isTokenValid(refreshTokenValue)) {
+        @Transactional
+        public AuthResponse refresh(String refreshTokenValue) {
+                if (!jwtService.isTokenValid(refreshTokenValue) || !jwtService.isRefreshToken(refreshTokenValue)) {
             throw new IllegalArgumentException("Invalid refresh token.");
         }
 
         String email = jwtService.extractEmail(refreshTokenValue);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+                RefreshToken storedRefreshToken = refreshTokenRepository.findByToken(refreshTokenValue)
+                                .filter(token -> !Boolean.TRUE.equals(token.getRevoked()))
+                                .filter(token -> token.getExpiresAt().isAfter(LocalDateTime.now()))
+                                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token."));
+
+                User user = storedRefreshToken.getUser();
+                if (!user.getEmail().equals(email) || !Boolean.TRUE.equals(user.getEnabled())) {
+                        throw new IllegalArgumentException("Invalid refresh token.");
+                }
 
         String accessToken = jwtService.generateToken(user.getId(), user.getEmail(), user.getRole().name());
         String newRefreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
@@ -114,7 +125,8 @@ public class AuthService {
         );
     }
 
-    public void logout(String refreshTokenValue) {
+        @Transactional
+        public void logout(String refreshTokenValue) {
         refreshTokenRepository.findByToken(refreshTokenValue)
                 .ifPresent(refreshTokenRepository::delete);
     }

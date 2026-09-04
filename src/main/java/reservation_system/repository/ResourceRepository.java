@@ -39,4 +39,6 @@ Optional<Resource> findByIdForUpdate(@Param("id") Long id);
             @Param("minCapacity") Integer minCapacity
     );
 
+        long countByStatus(ResourceStatus status);
+
 }

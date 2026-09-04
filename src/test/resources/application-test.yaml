@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:reservation_system_test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+app:
+  security:
+    enabled: false
+  demo-data:
+    enabled: false
+jwt:
+  secret: test-secret-for-local-ci-with-at-least-32-characters
+  expiration: 3600000
+  refresh-expiration: 604800000

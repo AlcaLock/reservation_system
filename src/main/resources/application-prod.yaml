@@ -1,0 +1,20 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    show-sql: false
+
+app:
+  security:
+    enabled: true
+  cors:
+    allowed-origin: ${APP_CORS_ALLOWED_ORIGIN}
+  demo-data:
+    enabled: false
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:3600000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+

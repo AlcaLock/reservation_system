@@ -2,10 +2,10 @@ package reservation_system.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import reservation_system.entity.Reservation;
 import reservation_system.entity.ReservationStatus;
@@ -24,6 +24,11 @@ public interface ReservationRepository
 
     List<Reservation> findAllByOrderByStartTimeAsc();
 
+    List<Reservation> findByStartTimeLessThanAndEndTimeGreaterThanOrderByStartTimeAsc(
+            LocalDateTime endTime,
+            LocalDateTime startTime
+    );
+
     List<Reservation> findByUserOrderByStartTimeDesc(
             User user
     );
@@ -32,4 +37,14 @@ public interface ReservationRepository
             User user,
             ReservationStatus status
     );
+
+        long countByStatus(ReservationStatus status);
+
+                @Query("""
+                                                select count(reservation) from Reservation reservation
+                                                where reservation.status = reservation_system.entity.ReservationStatus.ACTIVE
+                                                        and reservation.startTime <= :currentTime
+                                                        and reservation.endTime > :currentTime
+                                                """)
+                long countCurrentReservations(@Param("currentTime") LocalDateTime currentTime);
 }

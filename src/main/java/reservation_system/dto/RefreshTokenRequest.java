@@ -1,6 +1,9 @@
 package reservation_system.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class RefreshTokenRequest {
+    @NotBlank
     private String refreshToken;
 
     public RefreshTokenRequest() {

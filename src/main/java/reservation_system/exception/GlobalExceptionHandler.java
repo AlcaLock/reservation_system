@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+        @ExceptionHandler(IllegalArgumentException.class)
+        @ResponseStatus(HttpStatus.BAD_REQUEST)
+        public ErrorResponse handleIllegalArgument(IllegalArgumentException exception) {
+                return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+        }
+
         @ExceptionHandler(ResourceNotFoundException.class)
         @ResponseStatus(HttpStatus.NOT_FOUND)
         public ErrorResponse handleResourceNotFound(

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Service
@@ -31,6 +30,7 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("role", role);
+        claims.put("type", "access");
 
         return Jwts.builder()
                 .claims(claims)
@@ -68,6 +68,14 @@ public class JwtService {
         }
     }
 
+    public boolean isAccessToken(String token) {
+        return "access".equals(extractAllClaims(token).get("type", String.class));
+    }
+
+    public boolean isRefreshToken(String token) {
+        return "refresh".equals(extractAllClaims(token).get("type", String.class));
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -77,9 +85,10 @@ public class JwtService {
     }
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(
-                java.util.Base64.getEncoder().encodeToString(secretKey.getBytes(StandardCharsets.UTF_8))
-        );
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length < 32) {
+            throw new IllegalStateException("JWT secret must contain at least 32 bytes.");
+        }
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

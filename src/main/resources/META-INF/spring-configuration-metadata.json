@@ -1,0 +1,66 @@
+{
+  "groups": [
+    {
+      "name": "app",
+      "type": "java.lang.Object",
+      "description": "Application-specific settings."
+    },
+    {
+      "name": "app.security",
+      "type": "java.lang.Object",
+      "description": "Security settings."
+    },
+    {
+      "name": "app.cors",
+      "type": "java.lang.Object",
+      "description": "Cross-origin resource sharing settings."
+    },
+    {
+      "name": "app.demo-data",
+      "type": "java.lang.Object",
+      "description": "Demo data settings."
+    },
+    {
+      "name": "jwt",
+      "type": "java.lang.Object",
+      "description": "JSON Web Token settings."
+    }
+  ],
+  "properties": [
+    {
+      "name": "app.security.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Whether API security is enabled."
+    },
+    {
+      "name": "app.cors.allowed-origin",
+      "type": "java.lang.String",
+      "defaultValue": "http://localhost:4200",
+      "description": "Allowed frontend origin."
+    },
+    {
+      "name": "app.demo-data.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Whether demo data is loaded."
+    },
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Secret used to sign JSON Web Tokens."
+    },
+    {
+      "name": "jwt.expiration",
+      "type": "java.lang.Long",
+      "defaultValue": 3600000,
+      "description": "Access token expiration in milliseconds."
+    },
+    {
+      "name": "jwt.refresh-expiration",
+      "type": "java.lang.Long",
+      "defaultValue": 604800000,
+      "description": "Refresh token expiration in milliseconds."
+    }
+  ]
+}

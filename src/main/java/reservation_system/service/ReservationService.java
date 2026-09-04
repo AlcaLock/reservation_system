@@ -2,6 +2,7 @@ package reservation_system.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -110,6 +111,19 @@ public List<ReservationResponse> findAll() {
 }
 
 @Transactional(readOnly = true)
+public List<ReservationResponse> findByTimeRange(LocalDateTime startTime, LocalDateTime endTime) {
+    if (!endTime.isAfter(startTime)) {
+        throw new InvalidReservationTimeException("End time must be after start time.");
+    }
+
+    return reservationRepository
+            .findByStartTimeLessThanAndEndTimeGreaterThanOrderByStartTimeAsc(endTime, startTime)
+            .stream()
+            .map(this::toResponse)
+            .collect(Collectors.toList());
+}
+
+@Transactional(readOnly = true)
 public ReservationResponse findById(Long id) {
     return toResponse(reservationRepository.findById(id)
             .orElseThrow(() -> new ReservationNotFoundException(id)));
@@ -126,9 +140,15 @@ public List<ReservationResponse> findByUserId(Long userId) {
 }
 
 @Transactional
-public ReservationResponse cancel(Long id) {
+public ReservationResponse cancel(Long id, Long requestingUserId, boolean isAdmin) {
     Reservation reservation = reservationRepository.findById(id)
             .orElseThrow(() -> new ReservationNotFoundException(id));
+
+    if (requestingUserId != null
+            && !isAdmin
+            && !reservation.getUser().getId().equals(requestingUserId)) {
+        throw new AccessDeniedException("You can only cancel your own reservations.");
+    }
 
     if (reservation.getStatus() != ReservationStatus.ACTIVE) {
         throw new ReservationStatusException(
@@ -138,6 +158,11 @@ public ReservationResponse cancel(Long id) {
 
     reservation.setStatus(ReservationStatus.CANCELLED);
     return toResponse(reservationRepository.save(reservation));
+}
+
+@Transactional
+public ReservationResponse cancel(Long id) {
+    return cancel(id, null, false);
 }
 
 private User findUser(Long userId) {

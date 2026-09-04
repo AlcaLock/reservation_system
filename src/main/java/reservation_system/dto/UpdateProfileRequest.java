@@ -1,10 +1,10 @@
 package reservation_system.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class RegisterRequest {
+public class UpdateProfileRequest {
+
     @NotBlank
     @Size(max = 80)
     private String firstName;
@@ -13,17 +13,8 @@ public class RegisterRequest {
     @Size(max = 80)
     private String lastName;
 
-    @NotBlank
-    @Email
-    @Size(max = 150)
-    private String email;
-
-    @NotBlank
     @Size(min = 8, max = 72)
     private String password;
-
-    public RegisterRequest() {
-    }
 
     public String getFirstName() {
         return firstName;
@@ -39,14 +30,6 @@ public class RegisterRequest {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPassword() {
