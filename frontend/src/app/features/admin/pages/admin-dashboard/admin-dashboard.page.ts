@@ -66,6 +66,10 @@ export class AdminDashboardPage {
     return Math.min(100, count * 18);
   }
 
+  protected resourceCount(status: 'AVAILABLE' | 'MAINTENANCE' | 'INACTIVE'): number {
+    return this.resourceStats()?.resourcesByStatus.find((item) => item.status === status)?.resources || 0;
+  }
+
   protected fullName(): string {
     const user = this.session.currentUser();
     if (!user) {

@@ -71,9 +71,9 @@
           @if (resourceStats(); as stats) {
             <div class="inventory-grid">
               <div><span>Total</span><strong>{{ stats.totalResources }}</strong></div>
-              <div><span>Disponibles</span><strong>{{ stats.availableResources }}</strong></div>
-              <div><span>Mantenimiento</span><strong>{{ stats.maintenanceResources }}</strong></div>
-              <div><span>Inactivos</span><strong>{{ stats.inactiveResources }}</strong></div>
+              <div><span>Disponibles</span><strong>{{ resourceCount('AVAILABLE') }}</strong></div>
+              <div><span>Mantenimiento</span><strong>{{ resourceCount('MAINTENANCE') }}</strong></div>
+              <div><span>Inactivos</span><strong>{{ resourceCount('INACTIVE') }}</strong></div>
             </div>
           }
         </article>

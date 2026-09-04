@@ -24,13 +24,11 @@ export interface AdminDashboardSummary {
 
 export interface ResourceStatisticsSummary {
   totalResources: number;
-  availableResources: number;
-  maintenanceResources: number;
-  inactiveResources: number;
-  byType: {
-    ROOM: number;
-    LABORATORY: number;
-    EQUIPMENT: number;
-  };
-  averageCapacity: number;
+  resourcesWithoutReservations: number;
+  resourcesByStatus: ResourceStatusCount[];
+  resourcesByType: ResourceTypeCount[];
+  mostUsedResources: ResourceUsageStat[];
 }
+
+export interface ResourceStatusCount { status: 'AVAILABLE' | 'MAINTENANCE' | 'INACTIVE'; resources: number; }
+export interface ResourceTypeCount { type: 'ROOM' | 'LABORATORY' | 'EQUIPMENT'; resources: number; }
