@@ -8,15 +8,25 @@
       </div>
     </div>
 
-    <p class="lead">Selecciona el tipo de perfil e ingresa tus credenciales.</p>
+    <p class="lead">Inicia sesión con las credenciales de tu cuenta.</p>
 
-    <div class="account-grid" role="list">
+    <form class="login-form" (ngSubmit)="submit()">
+      <label>Correo electrónico<input type="email" name="email" autocomplete="email" [ngModel]="email()" (ngModelChange)="email.set($event)" required /></label>
+      <label>Contraseña<input type="password" name="password" autocomplete="current-password" [ngModel]="password()" (ngModelChange)="password.set($event)" required /></label>
+      @if (error(); as errorMessage) { <p class="login-error" role="alert">{{ errorMessage }}</p> }
+      <button class="login-button" type="submit" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Iniciando sesión...' : 'Iniciar sesión' }}
+      </button>
+    </form>
+
+    <div class="demo-section">
+      <div class="demo-heading"><span>Demo accounts</span><small>Selecciona una para rellenar el formulario</small></div>
+      <div class="account-grid" role="list">
       @for (account of demoAccounts; track account.role) {
         <button
           type="button"
           class="account-card"
-          [class.selected]="selectedRole() === account.role"
-          (click)="selectRole(account.role)"
+          (click)="useDemoAccount(account)"
         >
           <div class="account-header">
             @if (account.role === 'ADMIN') {
@@ -28,17 +38,12 @@
           </div>
           <strong>{{ account.name }}</strong>
           <small>{{ account.email }}</small>
+          <small>Password: {{ account.password }}</small>
           <p>{{ account.description }}</p>
         </button>
       }
+      </div>
     </div>
-
-    <label class="password-field">Contraseña<input type="password" name="password" [ngModel]="password()" (ngModelChange)="password.set($event)" required /></label>
-    @if (error(); as errorMessage) { <p class="login-error" role="alert">{{ errorMessage }}</p> }
-
-    <button class="login-button" type="button" (click)="submit()" [disabled]="isSubmitting() || !password()">
-      {{ isSubmitting() ? 'Accediendo...' : 'Entrar al panel' }}
-    </button>
     <a class="register-link" routerLink="/register">Crear una cuenta</a>
   </section>
 </main>
